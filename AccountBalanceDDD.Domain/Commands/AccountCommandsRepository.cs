@@ -1,10 +1,7 @@
 ﻿namespace AccountBalanceDDD.Domain.Repositories
 {
-    public class AccountCommandsRepository //: IAccountCommandRepository
+    public class AccountCommandsRepository 
     {
-        public void CreateAccount(Account account)
-        {
-            //Applying AddAccountEventCreated in  EventStore
-        }
+       
     }
 }
