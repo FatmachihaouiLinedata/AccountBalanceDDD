@@ -1,10 +1,11 @@
-﻿using System;
+﻿using AccountBalanceDDD.Domain.Aggregate;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace AccountBalanceDDD.Domain.Events
 {
-    public class ChequeDepositedEvent
+    public class ChequeDepositedEvent : Event
     {
         public Guid Id { get; set; }
         public decimal Ammount { get; set; }

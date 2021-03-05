@@ -1,6 +1,5 @@
 using AccountBalanceDDD.Domain;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace AccountBalanceDDD.Tests
@@ -19,12 +18,8 @@ namespace AccountBalanceDDD.Tests
                 Name_holder = "fatma",
                 OverDraftLimit = 150
             };
-            a.DepositCash(100, DateTime.Today);
-
-          
-             Assert.Equal(300, a.Balance);
-
-      
+          //  a.DepositCash(100, DateTime.Today);
+            Assert.Equal(300, a.Balance);
         }
     
         [Fact]
@@ -39,8 +34,6 @@ namespace AccountBalanceDDD.Tests
                 Name_holder ="fatma",
                 OverDraftLimit = 150
             };
-            Transaction t=  a.DepositCheque(200, DateTime.Today);
-            Assert.False(t.Status);
 
          
         }

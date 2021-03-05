@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using AccountBalanceDDD.Domain.Aggregate;
+using System;
 
 namespace AccountBalanceDDD.Domain.Events
 {
-    public class AccountCreatedEvent
+    public class AccountCreatedEvent : Event
     {
         public Guid Id { get; set; }
         public string Name_holder { get; set; }

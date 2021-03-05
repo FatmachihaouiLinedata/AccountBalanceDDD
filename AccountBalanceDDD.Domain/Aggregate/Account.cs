@@ -13,30 +13,24 @@ namespace AccountBalanceDDD.Domain
         public decimal Balance { get; set; }
         // blocked / unblocked
         public bool AccountStatus { get; set; }
-        public List<Transaction> transactions = new List<Transaction>();
+        List<TransfertCreatedEvent> tranferts { get; set; }
 
         public Account()
         {
         }
 
-        public void DepositCash(decimal ammount, DateTime depotDate)
-        {
-            Balance += ammount;
-            transactions.Add(new Transaction(Guid.NewGuid(), TransactionType.DepositCash, ammount, depotDate, true));
+        public void DepositCash(CashDepositedEvent @event)
+        {//need to check account state
+             Balance += @event.Ammount;
            
         }
 
-        public Transaction DepositCheque(decimal ammount, DateTime depotDate)
+        public void DepositCheque(ChequeDepositedEvent @event)
         {
-            Transaction transaction = new Transaction(Guid.NewGuid(), TransactionType.DepositCheque, ammount, depotDate, false);
-            if (CheckDateValid(depotDate))
+            if (CheckDateValid(@event.OperationDate))
             {
-                Balance += ammount;
-                
-                transaction.Status = true;
+                Balance += @event.Ammount;           
             }
-            transactions.Add(transaction);
-            return transaction;
         }
 
         private  bool CheckDateValid(DateTime depositDate)
@@ -58,36 +52,15 @@ namespace AccountBalanceDDD.Domain
             return false;
         }
 
-
-        public void TransfertFromAccount(Account fromAccount, Account toAccount, decimal Ammount, DateTime transfertDate)
+        public void TransfertFromAccount(TransfertCreatedEvent @event)
         {
-           
-            // check dailywiretransfert (fromAccount)
-            if (Decimal.Compare(TotalDailyTransfert(fromAccount, transfertDate), fromAccount.Daily_wire_tranfert_limit) == -1)
-                fromAccount.AccountStatus = false;
-            else
-            {
-                fromAccount.transactions.Add(new Transaction(Guid.NewGuid(), TransactionType.Transfert, Ammount, transfertDate, true));
-                fromAccount.Balance -= Ammount;
-
-                toAccount.Balance += Ammount;
-                toAccount.transactions.Add(new Transaction(Guid.NewGuid(), TransactionType.DepositCash, Ammount, transfertDate, true));
-            }
-
+            Id = @event.FromAccountId;
+            Balance -= @event.Ammount;
         }
        public decimal TotalDailyTransfert(Account account, DateTime date)
         {
-           
-            decimal cumulTransfertAmmount = 0;
-            foreach(var transaction in account.transactions)
-            {
-                if(transaction.DateTransaction.Equals(date) && transaction.TransactionType.Equals(TransactionType.Transfert)) 
-                {
-                    cumulTransfertAmmount += transaction.Ammount;
-                }
-            }
-
-            return cumulTransfertAmmount;
+            // should i add event to see total ammount of transfert per day 
+            return 0;
         }
     }
 }
