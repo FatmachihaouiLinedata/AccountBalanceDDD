@@ -11,16 +11,22 @@ namespace AccountBalanceDDD.Domain
     public class Transaction
     {
         public Guid Id { get; set; }
-        public TransactionType _transactionType { get; set; }
+        public TransactionType TransactionType { get; set; }
         public decimal Ammount { get; set; }
         public DateTime DateTransaction { get; set; }
+        public bool Status { get; set; }
 
-        public Transaction(Guid id, TransactionType transactionType, decimal ammount, DateTime dateTransaction)
+        public Transaction()
+        {
+
+        }
+        public Transaction(Guid id, TransactionType transaction_Type, decimal ammount, DateTime dateTransaction, bool status)
         {
             Id = id;
-            _transactionType = transactionType;
+            TransactionType = transaction_Type;
             Ammount = ammount;
             DateTransaction = dateTransaction;
+            Status = status;
         }
     }
 }
