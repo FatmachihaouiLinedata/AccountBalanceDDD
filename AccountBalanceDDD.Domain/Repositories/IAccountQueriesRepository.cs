@@ -6,7 +6,6 @@ namespace AccountBalanceDDD.Domain.Repositories
 {
     interface IAccountQueriesRepository
     {
-        public bool GetAccountStatus(Account account);
-
+        
     }
 }
