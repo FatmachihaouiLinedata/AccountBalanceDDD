@@ -7,13 +7,13 @@ namespace AccountBalanceDDD.Domain.Events
 {
     public class ChequeDepositedEvent : Event
     {
-        public Guid Id { get; set; }
         public decimal Ammount { get; set; }
-        public ChequeDepositedEvent(Guid id, decimal ammount)
+        
+        public ChequeDepositedEvent(Guid id, decimal ammount, DateTime depoDate)
         {
             Id = id;
             Ammount = ammount;
-            
+            OperationDate = depoDate;
         }
     }
 }

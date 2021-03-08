@@ -8,11 +8,12 @@ namespace AccountBalanceDDD.Domain.Events
     public class CashDepositedEvent :Event
     {
         public decimal Ammount { get; set; }
-        public Guid Account { get; set; }
-        public CashDepositedEvent(Guid id, decimal ammount)
+        public DateTime DepotDate { get; set; }
+        public CashDepositedEvent(Guid id, decimal ammount, DateTime depotDate)
         {
-            Account = id;
+            Id = id;
             Ammount = ammount;
+            DepotDate = depotDate;
         }
     }
 }

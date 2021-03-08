@@ -1,35 +1,41 @@
-﻿using AccountBalanceDDD.Domain.Events;
+﻿using AccountBalanceDDD.Domain.Aggregate;
+using AccountBalanceDDD.Domain.Events;
 using System;
-using System.Collections.Generic;
 
 namespace AccountBalanceDDD.Domain
 {
-    public class Account 
+    public class Account  : AggregateState
     {
         public Guid Id { get; set; }
         public string Name_holder { get; set; }
         public decimal OverDraftLimit { get; set; }
         public decimal Daily_wire_tranfert_limit { get; set; }
         public decimal Balance { get; set; }
-        // blocked / unblocked
         public bool AccountStatus { get; set; }
-        List<TransfertCreatedEvent> tranferts { get; set; }
+        
+       
 
-        public Account()
+        public void Apply(AccountOpenedEvent @event)
         {
+            Id = @event.Id;
+            Name_holder = @event.Name_holder;
+            OverDraftLimit = 100;
+            Daily_wire_tranfert_limit = 200;
+            Balance = 100;
+            AccountStatus = true;
         }
 
-        public void DepositCash(CashDepositedEvent @event)
-        {//need to check account state
+        public void Apply(CashDepositedEvent @event)
+        {
+             Id = @event.Id;
              Balance += @event.Ammount;
-           
         }
 
-        public void DepositCheque(ChequeDepositedEvent @event)
+        public void Apply(ChequeDepositedEvent @event)
         {
             if (CheckDateValid(@event.OperationDate))
             {
-                Balance += @event.Ammount;           
+                Balance += @event.Ammount;
             }
         }
 
@@ -52,16 +58,18 @@ namespace AccountBalanceDDD.Domain
             return false;
         }
 
-        public void TransfertFromAccount(TransfertCreatedEvent @event)
+        public void Apply(TransfertCreatedEvent @event)
         {
-            Id = @event.FromAccountId;
-            Balance -= @event.Ammount;
+            if (Daily_wire_tranfert_limit >= @event.TotalDailyAmmount)
+            {
+                AccountStatus = false;
+            }
+            else
+                Apply(new CashDepositedEvent(@event.Id, @event.Ammount, @event.OperationDate));
         }
-       public decimal TotalDailyTransfert(Account account, DateTime date)
-        {
-            // should i add event to see total ammount of transfert per day 
-            return 0;
-        }
+
+       
+      
     }
 }
 
