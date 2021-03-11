@@ -3,15 +3,15 @@ using System;
 
 namespace AccountBalanceDDD.Domain.Events
 {
-    public class AccountOpenedEvent : Event
+    public class AccountOpenedEvent : Event<Account, Guid>
     { 
+        public Guid Id { get; set; }
         public string Name_holder { get; set; }
        
-        public AccountOpenedEvent(Guid id, string name_holder, DateTime openDate)
+        public AccountOpenedEvent(Account account)
         {
-            Id = id;
-            Name_holder = name_holder;
-            OperationDate = openDate;
+            Id = account.Id;
+            Name_holder = account.Name_holder;
         }
     }
 }

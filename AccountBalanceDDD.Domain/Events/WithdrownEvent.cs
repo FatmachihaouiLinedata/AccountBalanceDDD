@@ -3,14 +3,12 @@ using System;
 
 namespace AccountBalanceDDD.Domain.Events
 {
-    public class WithdrownEvent : Event
+    public class WithdrownEvent : Event<Account, Guid>
     {
         public decimal Ammount { get; set; }
-        public WithdrownEvent(Guid id, decimal ammount)
+        public WithdrownEvent(decimal ammount)
         {
-            Id = id;
-            Ammount = ammount;
-
+           Ammount = ammount;
         }   
     }
 }

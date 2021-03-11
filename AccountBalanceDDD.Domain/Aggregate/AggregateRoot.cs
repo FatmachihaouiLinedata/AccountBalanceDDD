@@ -1,32 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Reflection;
+
 namespace AccountBalanceDDD.Domain.Aggregate
 {
-    public abstract class AggregateRoot 
+    public abstract class AggregateRoot<TA, Guid> : BaseEntity<Guid>, IAggregateRoot<Guid> where TA : class, IAggregateRoot<Guid>
     {
-        private readonly List<Event> _events = new List<Event>();
-        public Guid Id { get; protected set; }
-        public int Version { get; protected set; }
-        public AggregateState State { get; set; }
+        private readonly Queue<IEvent<Guid>> _events = new Queue<IEvent<Guid>>();
+        public long Version { get; private set; }
+        protected abstract void Apply(IEvent<Guid> @event);
+        private static readonly ConstructorInfo CTor;
 
-        public abstract AggregateState CreateState();
-        public List<Event> GetEvents()
+        public AggregateRoot()
         {
-            return _events;
+
         }
-        protected void Apply(Event @event)
+        public AggregateRoot(Guid id) : base(id)
         {
-           ApplyEvent(@event);
-           _events.Add(@event);
-        }
 
-        protected virtual void ApplyEvent(Event @event)
+        }
+        static AggregateRoot()
         {
-           if (State == null)
-              State = CreateState();
-
-           State.Apply(@event);
+            var aggregateType = typeof(TA);
+            CTor = aggregateType.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+                null, new Type[0], new ParameterModifier[0]);
+            if (null == CTor)
+                throw new InvalidOperationException($"Unable to find required private parameterless constructor for Aggregate of type '{aggregateType.Name}'");
         }
+        public IReadOnlyCollection<IEvent<Guid>> Events => _events.ToImmutableArray();
 
+        public void AddEvent(IEvent<Guid> @event)
+        {
+            _events.Enqueue(@event);
+            this.Apply(@event);
+            this.Version++;
+        }
+        public static TA Create(IEnumerable<IEvent<Guid>> events)
+        {
+            if (null == events || !events.Any())
+                throw new ArgumentNullException(nameof(events));
+            var result = (TA)CTor.Invoke(new object[0]);
+
+            var aggregate = result as AggregateRoot<TA, Guid>;
+            if (aggregate != null)
+                foreach (var @event in events)
+                    aggregate.AddEvent(@event);
+            return result;
+        }
     }
 }

@@ -1,9 +1,4 @@
-﻿using AccountBalanceDDD.Domain.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AccountBalanceDDD.Domain.Queries
+﻿namespace AccountBalanceDDD.Domain.Queries
 {
     class AccountQueriesRepository
     {

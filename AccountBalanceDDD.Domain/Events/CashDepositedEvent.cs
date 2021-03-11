@@ -1,19 +1,17 @@
 ﻿using AccountBalanceDDD.Domain.Aggregate;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace AccountBalanceDDD.Domain.Events
 {
-    public class CashDepositedEvent :Event
+    public class CashDepositedEvent : Event<Account, Guid>
     {
+        public Guid AccountId { get; set; }
         public decimal Ammount { get; set; }
-        public DateTime DepotDate { get; set; }
-        public CashDepositedEvent(Guid id, decimal ammount, DateTime depotDate)
+        public CashDepositedEvent(Account account, decimal amount)
         {
-            Id = id;
-            Ammount = ammount;
-            DepotDate = depotDate;
+            AccountId = account.Id;
+            Ammount = amount;
+           
         }
     }
 }
