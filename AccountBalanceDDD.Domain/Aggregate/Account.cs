@@ -4,16 +4,18 @@ using System;
 
 namespace AccountBalanceDDD.Domain
 {
-    public class Account  : AggregateRoot<Account,Guid>
+    public class Account  : AggregateRoot
     {
-        public Guid Id { get; private set; }
         public string Name_holder { get; set; }
         public decimal OverDraftLimit { get; set; }
         public decimal Daily_wire_tranfert_limit { get; set; }
         public decimal Balance { get; set; }
         public bool AccountStatus { get; set; }
 
-        private Account()
+        public override Guid Id { get; set; }
+
+             
+        public Account()
         {
 
         }
@@ -24,21 +26,22 @@ namespace AccountBalanceDDD.Domain
             OverDraftLimit = overdraftlimit;
             Daily_wire_tranfert_limit = dailywiretransfertlimit;
             Balance = 0;
-            AddEvent(new AccountOpenedEvent(this));
+            ApplyChange(new AccountOpenedEvent(this));
         }
 
         public void DepositCash(decimal ammount)
         {
             if (ammount < 0) throw new ArgumentOutOfRangeException(nameof(ammount), "amount should be >0");
-            AddEvent(new CashDepositedEvent(this, ammount));
+            Balance += ammount; 
+            ApplyChange(new CashDepositedEvent(this, ammount));
         }
 
         public void DepositCheque(decimal ammount)
         {
             if (CheckDateValid(DateTime.UtcNow) == false) throw new Exception("deposit cheque in progress");
+            Balance += ammount;
+            ApplyChange(new ChequeDepositedEvent(this, ammount));
 
-            AddEvent(new ChequeDepositedEvent(this, ammount));
-          
         }
 
         private  bool CheckDateValid(DateTime depositDate)
@@ -70,40 +73,38 @@ namespace AccountBalanceDDD.Domain
         public void Withdrow(decimal amount)
         {
             // block account if check is false
-            if (CheckifCanWithdrow(amount) == false) AccountStatus = false;
-            else AddEvent(new WithdrownEvent(amount));
+            if (CheckifCanWithdrow(amount) == false)
+            {
+                AccountStatus = false;
+                Balance -= amount;
+
+            }
+           else ApplyChange(new WithdrownEvent(amount));
         }
         public void Transfert()
         {
         }
 
-        protected override void Apply(IEvent<Guid> @event)
+        protected override void Apply(Event @event)
         {
             switch (@event)
             {
                 case AccountOpenedEvent e:
-                    Id = e.Id;
-                    Balance = 0;
-                    Name_holder = e.Name_holder;
-                    
+                    new Account(e.Id, e.Name_holder, OverDraftLimit, Daily_wire_tranfert_limit);
+
                     break;
                 case CashDepositedEvent c:
-                    Balance += c.Ammount;
+                    DepositCash(c.Ammount);
+                                    
                     break;
-                case WithdrownEvent d:
-                    Balance -= d.Ammount;
+                case WithdrownEvent w:
+                    Withdrow(w.Ammount);
                     break;
 
                 case TransfertCreatedEvent t:
-                  
+                    Transfert();
                     break;
             }
-        }
-
-        
-        public static Account Create(string name_holder, decimal overdraftlimit, decimal dailywiretransfertlimit)
-        {
-            return new Account(Guid.NewGuid(), name_holder, overdraftlimit, dailywiretransfertlimit);
         }
     }
 }

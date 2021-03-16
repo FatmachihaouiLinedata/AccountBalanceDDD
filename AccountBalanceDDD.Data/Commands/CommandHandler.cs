@@ -1,13 +1,15 @@
 ﻿using AccountBalanceDDD.Domain;
+using AccountBalanceDDD.Domain.Aggregate;
+using AccountBalanceDDD.Domain.Events;
 using AccountBalanceDDD.Domain.Repositories;
 using System;
 
 namespace AccountBalanceDDD.Application.Commands
 {
-    public class CommandHandler 
+    public class CommandHandler  
     {
-        private IEventsRepository<Account, Guid> _eventsRepository;
-        public CommandHandler(IEventsRepository<Account, Guid> eventsRepository)
+        public readonly IEventsRepository _eventsRepository;
+        public CommandHandler(IEventsRepository eventsRepository)
         {
             _eventsRepository = eventsRepository;
 
@@ -15,34 +17,36 @@ namespace AccountBalanceDDD.Application.Commands
        
         public void Handle(CreateAccount command)
         {
-            var account = _eventsRepository.Find(command.Id);
-            if (account != null)
-                throw new Exception("account already exist");
 
-            else
-            {
-                account = new Account(command.Id, command.Name_holder, command.OverDraftLimit, command.Daily_wire_tranfert_limit);
-                _eventsRepository.Save(account);
-            }
-        
-        }
-
-       
+            Account account = new Account(command.Id, command.Name_holder, command.OverDraftLimit, command.OverDraftLimit);
+            _eventsRepository.Save(account.Id, new AccountOpenedEvent(account));
+        }      
         public void Handle(DepositCash command)
         {
-            var account = _eventsRepository.Find(command.AccountId);
+            Event account = _eventsRepository.Find(command.AccountId);
             if (account == null)
                 throw new ArgumentOutOfRangeException(nameof(command.AccountId), "invalid account id");
 
 
             else
             {
-                account.DepositCash(command.Ammount);
-                _eventsRepository.Save(account);
+              //  account.DepositCash(command.Ammount);
+              //  _eventsRepository.Save(account);
             }
 
         }
 
-       
+       public void Handle(DepositCheque command)
+       {
+            var account = _eventsRepository.Find(command.AccountId);
+            if(account== null)
+                throw new ArgumentOutOfRangeException(nameof(command.AccountId), "invalid account id");
+            else
+            {
+              //  account.DepositCheque(command.Ammount);
+                //_eventsRepository.Save(account);
+            }
+
+        }
     }
 }

@@ -3,7 +3,7 @@ using System;
 
 namespace AccountBalanceDDD.Domain.Events
 {
-    public class ChequeDepositedEvent : Event<Account,Guid>
+    public class ChequeDepositedEvent : Event
     {
         public decimal Ammount { get; set; }
         public Guid AccountId { get; set; }
@@ -12,5 +12,6 @@ namespace AccountBalanceDDD.Domain.Events
             AccountId = account.Id;
             Ammount = ammount;
         }
+       
     }
 }

@@ -1,10 +1,13 @@
 ﻿using AccountBalanceDDD.Domain.Aggregate;
+using System;
+using System.Collections.Generic;
 
 namespace AccountBalanceDDD.Domain.Repositories
 {
-    public interface IEventsRepository<TA, Guid> where TA : class, IAggregateRoot<Guid>
+    public interface IEventsRepository
     {
-        public TA Find(Guid id);
-        public void Save(TA aggregateRoot);
+        public Event Find(Guid id);
+        public void Save(Guid id, Event @event);
+
     }
 }

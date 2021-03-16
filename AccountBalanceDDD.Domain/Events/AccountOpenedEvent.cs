@@ -3,9 +3,9 @@ using System;
 
 namespace AccountBalanceDDD.Domain.Events
 {
-    public class AccountOpenedEvent : Event<Account, Guid>
+    public class AccountOpenedEvent : Event
     { 
-        public Guid Id { get; set; }
+      
         public string Name_holder { get; set; }
        
         public AccountOpenedEvent(Account account)
@@ -13,5 +13,6 @@ namespace AccountBalanceDDD.Domain.Events
             Id = account.Id;
             Name_holder = account.Name_holder;
         }
+     
     }
 }

@@ -3,7 +3,7 @@ using System;
 
 namespace AccountBalanceDDD.Domain.Events
 {
-    public class TransfertCreatedEvent : Event<Account, Guid>
+    public class TransfertCreatedEvent : Event
     {
         public Guid FromAccountId { get; set; }
         public Guid ToAccountId { get; set;}
