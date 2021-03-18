@@ -1,4 +1,5 @@
 ﻿using AccountBalanceDDD.Domain.Aggregate;
+using AccountBalanceDDD.Domain.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,21 +13,38 @@ namespace AccountBalanceDDD.Domain.Repositories
         {
             _data = data;
         }
-        
-        public Event Find(Guid id)
-        {
-             _data.TryGetValue(id, out List<Event> list);
-            if (list != null)
-                return list.ElementAt(list.Count-1);
-            else
-                return null;
-        }
-
         public void Save(Guid id, Event @event)
         {
-            List<Event> events = new List<Event>();
-            events.Add(@event);
-            _data.Add(id, events);
+            List<Event> events;
+            if (_data.TryGetValue(id, out events))
+            {
+                events.Add(@event);
+                _data[id] = events;
+                
+            }
+
+            else
+            {
+                List<Event> myevents = new List<Event>();
+                myevents.Add(@event);
+                _data.Add(id, myevents);
+
+            }
         }
-    }
+
+       
+        Account IEventsRepository.Find(Guid id)
+         {
+            var account = new Account();
+            List<Event> events;
+            if (_data.TryGetValue(id, out events))
+            account.Load(events);
+            var lastevt = events[events.Count - 1];
+
+            account.Apply(lastevt);
+                
+
+            return account;
+         }
+     }
 }

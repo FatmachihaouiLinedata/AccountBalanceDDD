@@ -1,9 +1,7 @@
 using AccountBalanceDDD.Application.Commands;
-using AccountBalanceDDD.Domain;
 using AccountBalanceDDD.Domain.Aggregate;
 using AccountBalanceDDD.Domain.Events;
 using AccountBalanceDDD.Domain.Repositories;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -14,25 +12,62 @@ namespace AccountBalanceDDD.Tests
     [ExcludeFromCodeCoverage]
     public class AccountBalanceTest
     {
-        public static Dictionary<Guid, List<Event>> data = new Dictionary<Guid, List<Event>>();
-        
-        private readonly IEventsRepository repository = new Repository(data);
-
-
-       [Fact]
-       public void ShouldCreateEvent()
+        public static Guid id = Guid.NewGuid();
+        public static Dictionary<Guid, List<Event>> data = new Dictionary<Guid, List<Event>>
         {
-            Guid id = Guid.NewGuid();
+            {
+                id, new List<Event>{ new AccountOpened(Guid.NewGuid(),"fatma"), 
+                    new CashDeposited(Guid.NewGuid(),300)
 
-           Account account = new Account(id, "fatma", 100, 100);
-            var mockRepo = new Mock<IEventsRepository>();
-            mockRepo.Setup(x => x.Save(id,new AccountOpenedEvent(account)));
-
-           Assert.NotNull(repository.Find(id));
-           
-       }
-
+            } 
+            } 
+        };
+        private static readonly IEventsRepository repository = new Repository(data);
+        private CommandHandler commandHandler = new CommandHandler(repository);
 
        
+        [Theory]
+        [InlineData("fatma")]
+        [InlineData("Rihab")]
+        public void ShouldCreateEvent(string name)
+         {
+            Guid id = Guid.NewGuid();
+            var cmd = new CreateAccount(id,name);
+            commandHandler.Handle(cmd);
+            var account = repository.Find(id);
+            Assert.Equal(0, account.Balance);
+        }
+            
+        [Theory]
+        [InlineData(200)]
+        public void SouldDepositCash(decimal ammount)
+        {          
+            var cmd = new DepositCash(id, ammount);
+            commandHandler.Handle(cmd);
+            var account = repository.Find(id);
+
+            account.Load(data[id]);
+            Assert.Equal(200, account.Balance);
+        }
+        [Theory]
+        [InlineData(100)]
+        public void ShoudDepositCheque(decimal ammount)
+        {
+            // to do
+        }
+        [Theory]
+        [InlineData(100)]
+        public void ShouldWithDrownCash(decimal ammount)
+        {
+            var cmd = new WithDrown(id, ammount);
+            commandHandler.Handle(cmd);
+            var account = repository.Find(id);
+
+            account.Load(data[id]);
+            Assert.Equal(200, account.Balance);
+        }
+            
+      
+
     }
 }

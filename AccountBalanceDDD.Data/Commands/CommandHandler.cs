@@ -1,6 +1,4 @@
-﻿using AccountBalanceDDD.Domain;
-using AccountBalanceDDD.Domain.Aggregate;
-using AccountBalanceDDD.Domain.Events;
+﻿using AccountBalanceDDD.Domain.Events;
 using AccountBalanceDDD.Domain.Repositories;
 using System;
 
@@ -18,24 +16,14 @@ namespace AccountBalanceDDD.Application.Commands
         public void Handle(CreateAccount command)
         {
 
-            Account account = new Account(command.Id, command.Name_holder, command.OverDraftLimit, command.OverDraftLimit);
-            _eventsRepository.Save(account.Id, new AccountOpenedEvent(account));
+            _eventsRepository.Save(command.AccountId, new AccountOpened(command.AccountId, command.Name_holder));
         }      
         public void Handle(DepositCash command)
-        {
-            Event account = _eventsRepository.Find(command.AccountId);
-            if (account == null)
-                throw new ArgumentOutOfRangeException(nameof(command.AccountId), "invalid account id");
-
-
-            else
-            {
-              //  account.DepositCash(command.Ammount);
-              //  _eventsRepository.Save(account);
-            }
-
+        {  
+                _eventsRepository.Save(command.AccountId, new CashDeposited(command.AccountId,command.Ammount));
         }
 
+       
        public void Handle(DepositCheque command)
        {
             var account = _eventsRepository.Find(command.AccountId);
@@ -43,10 +31,22 @@ namespace AccountBalanceDDD.Application.Commands
                 throw new ArgumentOutOfRangeException(nameof(command.AccountId), "invalid account id");
             else
             {
-              //  account.DepositCheque(command.Ammount);
-                //_eventsRepository.Save(account);
+                account.DepositCheque(command.Ammount);
+                _eventsRepository.Save(account.Id, new CashDeposited(command.AccountId,command.Ammount));
             }
 
+        }
+
+        public void Handle(WithDrown command)
+        {
+            var account = _eventsRepository.Find(command.AccountId);
+            if (account == null)
+                throw new ArgumentOutOfRangeException(nameof(command.AccountId), "invalid account id");
+            else
+            {
+                account.Withdrow(command.Ammount);
+                _eventsRepository.Save(account.Id, new Withdrown(command.AccountId, command.Ammount));
+            }
         }
     }
 }

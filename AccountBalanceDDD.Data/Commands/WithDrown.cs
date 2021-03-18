@@ -2,14 +2,15 @@
 
 namespace AccountBalanceDDD.Application.Commands
 {
-    public class DepositCash 
+    public class WithDrown
     {
         public Guid AccountId { get; set; }
         public decimal Ammount { get; set; }
-        public DepositCash(Guid accountId, decimal amount)
+
+        public WithDrown(Guid id, decimal ammount)
         {
-            AccountId = accountId;
-            Ammount = amount;
+            AccountId = id;
+            Ammount = ammount;
 
         }
     }

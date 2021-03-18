@@ -8,19 +8,16 @@ namespace AccountBalanceDDD.Domain.Aggregate
         private readonly List<Event> _events = new List<Event>();
         public abstract Guid Id { get; set; }
         public int Version { get;  set; }
-      
-        protected abstract void Apply(Event @event);
 
-        public IEnumerable<Event> GetEvents(Guid id)
+        public abstract void Apply(Event @event);
+       
+        public void Load(List<Event> events)
         {
-           return _events;
+            foreach (var e in events)
+            _events.Add(e);
         }
-        protected void ApplyChange(Event @event)
-        {
-            Apply(@event);
-            _events.Add(@event);
-
-        }
+        
+        
        
         
     }

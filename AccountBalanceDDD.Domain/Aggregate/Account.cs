@@ -17,30 +17,28 @@ namespace AccountBalanceDDD.Domain
              
         public Account()
         {
-
+           
         }
-        public Account(Guid id, string name_holder, decimal overdraftlimit, decimal dailywiretransfertlimit)
+        public Account(Guid id, string name_holder)
         {
             Id = id;
             Name_holder = name_holder;
-            OverDraftLimit = overdraftlimit;
-            Daily_wire_tranfert_limit = dailywiretransfertlimit;
-            Balance = 0;
-            ApplyChange(new AccountOpenedEvent(this));
+            Apply(new AccountOpened(id,name_holder));
+           
         }
-
+       
         public void DepositCash(decimal ammount)
         {
             if (ammount < 0) throw new ArgumentOutOfRangeException(nameof(ammount), "amount should be >0");
-            Balance += ammount; 
-            ApplyChange(new CashDepositedEvent(this, ammount));
+           
+            Apply(new CashDeposited(Id,ammount));
         }
 
         public void DepositCheque(decimal ammount)
         {
             if (CheckDateValid(DateTime.UtcNow) == false) throw new Exception("deposit cheque in progress");
-            Balance += ammount;
-            ApplyChange(new ChequeDepositedEvent(this, ammount));
+           
+            Apply(new ChequeDeposited(Id, ammount));
 
         }
 
@@ -75,37 +73,46 @@ namespace AccountBalanceDDD.Domain
             // block account if check is false
             if (CheckifCanWithdrow(amount) == false)
             {
-                AccountStatus = false;
-                Balance -= amount;
+                AccountStatus = false; // blocked event
+              
 
             }
-           else ApplyChange(new WithdrownEvent(amount));
+           else Apply(new Withdrown(Id,amount));
         }
         public void Transfert()
         {
+            // to do
         }
 
-        protected override void Apply(Event @event)
-        {
+       
+
+      
+      public override void Apply(Event @event)
+       {
             switch (@event)
             {
-                case AccountOpenedEvent e:
-                    new Account(e.Id, e.Name_holder, OverDraftLimit, Daily_wire_tranfert_limit);
+                case AccountOpened e:
+                    Id = e.Id;
+                    Name_holder = e.Name_holder;
+                    OverDraftLimit = 100;
+                    Daily_wire_tranfert_limit = 100;
+                    AccountStatus = true;
+                    Balance = 0;
 
                     break;
-                case CashDepositedEvent c:
-                    DepositCash(c.Ammount);
-                                    
-                    break;
-                case WithdrownEvent w:
-                    Withdrow(w.Ammount);
-                    break;
+                case CashDeposited c:
+                    Balance += c.Ammount;
 
-                case TransfertCreatedEvent t:
-                    Transfert();
                     break;
+                case Withdrown w:
+                    Balance -= w.Ammount;
+            
+                break;
+
+                
             }
         }
+    
     }
 }
 

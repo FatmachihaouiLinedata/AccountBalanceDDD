@@ -3,13 +3,13 @@ using System;
 
 namespace AccountBalanceDDD.Domain.Events
 {
-    public class CashDepositedEvent :Event
+    public class CashDeposited :Event
     {
         public Guid AccountId { get; set; }
         public decimal Ammount { get; set; }
-        public CashDepositedEvent(Account account, decimal amount)
+        public CashDeposited(Guid id, decimal amount)
         {
-            AccountId = account.Id;
+            AccountId = id;
             Ammount = amount;
            
         }
