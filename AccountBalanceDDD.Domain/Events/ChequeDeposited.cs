@@ -5,12 +5,12 @@ namespace AccountBalanceDDD.Domain.Events
 {
     public class ChequeDeposited : Event
     {
-        public decimal Ammount { get; set; }
+        public decimal Amount { get; set; }
         public Guid AccountId { get; set; }
-        public ChequeDeposited(Guid id, decimal ammount)
+        public ChequeDeposited(Guid id, decimal amount)
         {
             AccountId = id;
-            Ammount = ammount;
+            Amount = amount;
         }
        
     }

@@ -2,14 +2,14 @@
 
 namespace AccountBalanceDDD.Application.Commands
 {
-    public class DepositCheque 
+    public class BlockAccount
     {
-        public decimal Amount { get; set; }
         public Guid AccountId { get; set; }
-        public DepositCheque(Guid id, decimal amount)
+
+        public BlockAccount(Guid id)
         {
             AccountId = id;
-            Amount = amount;
+
         }
     }
 }

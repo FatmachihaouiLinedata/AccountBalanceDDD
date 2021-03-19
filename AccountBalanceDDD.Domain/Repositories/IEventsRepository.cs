@@ -3,10 +3,10 @@ using System;
 
 namespace AccountBalanceDDD.Domain.Repositories
 {
-    public interface IEventsRepository
+    public interface IEventsRepository<T> where T : AggregateRoot, new()
     {
-         Account Find(Guid id);
-         void Save(Guid id, Event @event);
+         T Find(Guid id);
+         void Save(T aggregateRoot, Event @event);
 
     }
 }

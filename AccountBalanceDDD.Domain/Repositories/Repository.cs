@@ -6,45 +6,50 @@ using System.Linq;
 
 namespace AccountBalanceDDD.Domain.Repositories
 {
-    public class Repository : IEventsRepository
+    public class Repository<T> : IEventsRepository<T> where T : AggregateRoot, new()
     {
       public Dictionary<Guid, List<Event>> _data = new Dictionary<Guid, List<Event>>();
         public Repository(Dictionary<Guid, List<Event>> data)
         {
             _data = data;
         }
-        public void Save(Guid id, Event @event)
+        public void Save(T aggregateRoot, Event @event)
         {
-            List<Event> events;
-            if (_data.TryGetValue(id, out events))
+            if (_data.ContainsKey(aggregateRoot.Id))
             {
-                events.Add(@event);
-                _data[id] = events;
-                
+                _data[aggregateRoot.Id].Add(@event);
             }
-
             else
             {
-                List<Event> myevents = new List<Event>();
-                myevents.Add(@event);
-                _data.Add(id, myevents);
-
+                _data.Add(aggregateRoot.Id, new List<Event>());
             }
+            aggregateRoot.Apply(@event);
         }
 
        
-        Account IEventsRepository.Find(Guid id)
-         {
-            var account = new Account();
+
+        T IEventsRepository<T>.Find(Guid id)
+        {
+            T account = new T();
+
             List<Event> events;
-            if (_data.TryGetValue(id, out events))
-            account.Load(events);
-            var lastevt = events[events.Count - 1];
 
-            account.Apply(lastevt);
-                
+             if (!_data.ContainsKey(id))
 
+                account = null;
+            
+             else
+             if (_data.TryGetValue(id, out events))
+             {
+               
+                foreach (var e in events)
+                {
+                    account.Apply(e);
+                }
+              
+             }
             return account;
-         }
-     }
+
+        }
+    }
 }

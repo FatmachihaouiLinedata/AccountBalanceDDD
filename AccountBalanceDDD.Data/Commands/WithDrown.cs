@@ -5,13 +5,12 @@ namespace AccountBalanceDDD.Application.Commands
     public class WithDrown
     {
         public Guid AccountId { get; set; }
-        public decimal Ammount { get; set; }
+        public decimal Amount { get; set; }
 
-        public WithDrown(Guid id, decimal ammount)
+        public WithDrown(Guid id, decimal amount)
         {
             AccountId = id;
-            Ammount = ammount;
-
+            Amount = amount;
         }
     }
 }

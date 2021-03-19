@@ -6,11 +6,11 @@ namespace AccountBalanceDDD.Domain.Events
     public class Withdrown : Event
     {
         public Guid AccountId { get; set; }
-        public decimal Ammount { get; set; }
-        public Withdrown(Guid id, decimal ammount)
+        public decimal Amount { get; set; }
+        public Withdrown(Guid id, decimal amount)
         {
            AccountId = id;
-           Ammount = ammount;
+           Amount = amount;
         }
        
 

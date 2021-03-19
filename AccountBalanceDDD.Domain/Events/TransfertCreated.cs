@@ -5,15 +5,14 @@ namespace AccountBalanceDDD.Domain.Events
 {
     public class TransfertCreated : Event
     {
-        public Guid FromAccountId { get; set; }
-        public Guid ToAccountId { get; set;}
-        public decimal Ammount { get; set;}
+        public Guid AccountId { get; set; }
+      
+        public decimal Amount { get; set;}
 
-        public TransfertCreated(Account fromAccount, Account toAccount, decimal ammount)
+        public TransfertCreated(Guid id, decimal amount)
         {
-            FromAccountId = fromAccount.Id;
-            ToAccountId = toAccount.Id;
-            Ammount = ammount;
+            AccountId = id;
+            Amount = amount;
         }
     
         
