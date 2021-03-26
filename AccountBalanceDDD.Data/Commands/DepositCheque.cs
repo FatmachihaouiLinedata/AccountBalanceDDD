@@ -6,9 +6,9 @@ namespace AccountBalanceDDD.Application.Commands
     {
         public decimal Amount { get; set; }
         public Guid AccountId { get; set; }
-        public DepositCheque(Guid id, decimal amount)
+        public DepositCheque(Guid accountId, decimal amount)
         {
-            AccountId = id;
+            AccountId = accountId;
             Amount = amount;
         }
     }

@@ -7,9 +7,9 @@ namespace AccountBalanceDDD.Domain.Events
     {
         public decimal Amount { get; set; }
         public Guid AccountId { get; set; }
-        public ChequeDeposited(Guid id, decimal amount)
+        public ChequeDeposited(Guid accountId, decimal amount)
         {
-            AccountId = id;
+            AccountId = accountId;
             Amount = amount;
         }
        

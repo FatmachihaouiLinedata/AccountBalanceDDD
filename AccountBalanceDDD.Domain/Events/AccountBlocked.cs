@@ -5,17 +5,16 @@ using System.Text;
 
 namespace AccountBalanceDDD.Domain.Events
 {
-    public class Blocked : Event
+    public class AccountBlocked : Event
     {
         public Guid AccountId { get; set; }
         // true = active / false = blocked
-        public bool AccountStatus { get; set; }
+       
 
-        public Blocked(Guid id, bool accountStatus)
+        public AccountBlocked(Guid accountId)
         {
-            AccountId = id;
-            AccountStatus = accountStatus;
-
+            AccountId = accountId;
+         
         }
     
     }

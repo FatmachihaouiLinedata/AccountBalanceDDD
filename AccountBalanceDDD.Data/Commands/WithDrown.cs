@@ -7,9 +7,9 @@ namespace AccountBalanceDDD.Application.Commands
         public Guid AccountId { get; set; }
         public decimal Amount { get; set; }
 
-        public WithDrown(Guid id, decimal amount)
+        public WithDrown(Guid accountId, decimal amount)
         {
-            AccountId = id;
+            AccountId = accountId;
             Amount = amount;
         }
     }

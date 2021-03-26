@@ -7,10 +7,10 @@ namespace AccountBalanceDDD.Application.Commands
         public Guid AccountId { get; private set; }
         public string Name_holder { get; set; }
         
-        public CreateAccount(Guid id, string name_holder)
+        public CreateAccount(Guid accountId, string name_holder)
         {
 
-            AccountId = id;
+            AccountId = accountId;
             Name_holder = name_holder;
            
         }

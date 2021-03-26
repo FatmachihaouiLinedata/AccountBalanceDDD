@@ -28,7 +28,7 @@ namespace AccountBalanceDDD.Domain.Repositories
 
        
 
-        T IEventsRepository<T>.Find(Guid id)
+        T IEventsRepository<T>.TryFind(Guid id)
         {
             T account = new T();
 

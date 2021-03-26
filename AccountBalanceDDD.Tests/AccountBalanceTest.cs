@@ -10,16 +10,14 @@ using Xunit;
 
 namespace AccountBalanceDDD.Tests
 {// to do
-    [ExcludeFromCodeCoverage]
     public class AccountBalanceTest
     {
         public static Guid id = new Guid("41b8a258-afc3-46c1-ae68-1ba16228e6dc");
         public static Dictionary<Guid, List<Event>> data = new Dictionary<Guid, List<Event>>
         {
             {
-                id, new List<Event>{ new AccountOpened(Guid.NewGuid(),"fatma"),
-                    new CashDeposited(Guid.NewGuid(),300)
-            } 
+                id, new List<Event>{ new AccountOpened(id,"fatma"),
+                    new CashDeposited(id,300)} 
             } 
         };
         private static readonly IEventsRepository<Account> repository = new Repository<Account>(data);
@@ -30,10 +28,12 @@ namespace AccountBalanceDDD.Tests
         [InlineData("Rihab")]
         public void ShouldCreateEvent(string name)
          {
-            var cmd = new CreateAccount(Guid.NewGuid(),name);
+            Guid newId = Guid.NewGuid();
+            var cmd = new CreateAccount(newId, name);
+            
             commandHandler.Handle(cmd);
-            var account = repository.Find(id);
-            Assert.Equal(0, account.Balance);
+            var account = repository.TryFind(newId);
+            Assert.Equal(0, account.balance);
         }
             
         [Theory]
@@ -42,8 +42,8 @@ namespace AccountBalanceDDD.Tests
         {          
             var cmd = new DepositCash(id, ammount);
             commandHandler.Handle(cmd);
-            var account = repository.Find(id);
-            Assert.Equal(500, account.Balance);
+            var account = repository.TryFind(id);
+            Assert.Equal(500, account.balance);
         }    
         
         [Theory]
@@ -53,8 +53,8 @@ namespace AccountBalanceDDD.Tests
         {
             var cmd = new WithDrown(id, ammount);
             commandHandler.Handle(cmd);
-            var account = repository.Find(id);
-            Assert.Equal(200, account.Balance);
+            var account = repository.TryFind(id);
+            Assert.Equal(200, account.balance);
         }
         [Theory]
         [InlineData(500)]
@@ -62,8 +62,8 @@ namespace AccountBalanceDDD.Tests
         {
             var cmd = new WithDrown(id, amount);
             commandHandler.Handle(cmd);
-            var account = repository.Find(id);
-            Assert.False(account.AccountStatus);
+            var account = repository.TryFind(id);
+            Assert.False(account.accountStatus);
                
         }
 
@@ -74,8 +74,8 @@ namespace AccountBalanceDDD.Tests
             // when balance <0 , and we handle a deposit event should unblock
             var cmd = new DepositCash(id, amount);
             commandHandler.Handle(cmd);
-            var account = repository.Find(id);
-            Assert.True(account.AccountStatus);
+            var account = repository.TryFind(id);
+            Assert.True(account.accountStatus);
         }
       
         [Theory]
@@ -84,9 +84,9 @@ namespace AccountBalanceDDD.Tests
         {
             var cmd = new Transfert(id, amount);
             commandHandler.Handle(cmd);
-            var account = repository.Find(id);
-            Assert.Equal(200, account.Balance);
-            Assert.Equal(0, account.Daily_wire_tranfert_limit);
+            var account = repository.TryFind(id);
+            Assert.Equal(200, account.balance);
+            Assert.Equal(0, account.dailywiretransfertlimit);
         }
 
     }

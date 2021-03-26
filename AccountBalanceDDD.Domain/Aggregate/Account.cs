@@ -6,29 +6,59 @@ namespace AccountBalanceDDD.Domain
 {
     public class Account  : AggregateRoot
     {
-        public string Name_holder { get; set; }
-        public decimal OverDraftLimit { get; set; }
-        public decimal Daily_wire_tranfert_limit { get; set; }
-        public decimal Balance { get; set; }
-        public bool AccountStatus { get; set; }
+        
+        private string Name_holder;
+        private decimal OverDraftLimit;
+        private decimal Daily_wire_tranfert_limit;
+        private decimal Balance;
+        private bool AccountStatus;
+
+        public string name_holder
+        {
+            get { return Name_holder; }
+        }
+        
+   
+
+        public decimal balance
+        {
+            get { return Balance; }
+        }
+        public decimal dailywiretransfertlimit
+        {
+            get { return Daily_wire_tranfert_limit; }
+        }
+        public bool accountStatus
+        {
+            get { return AccountStatus; }
+        }
+
 
         public override Guid Id { get; set; }
 
-             
         public Account()
         {
-           
+
         }
-        public Account(Guid id, string name_holder)
+    
+        public Account(Guid accountId, string nameHolder)
         {    
-            if (id == null)
+            if (accountId == null)
                 throw new ArgumentNullException("id should not be null");
-            if (string.IsNullOrEmpty(name_holder))
+            if (string.IsNullOrEmpty(nameHolder))
                 throw new ArgumentNullException("please enter valid name");
-            Id = id;
-            Name_holder = name_holder;
-        }
+            else
+            {
+                Id = accountId;
+                Name_holder = nameHolder;
+            }
        
+        }
+        public bool CheckifBlocked(decimal amount)
+        {
+            return ((AccountStatus == false) && (amount + Balance > 0));
+
+        }
 
         public bool CheckDateValid(DateTime depositDate)
         {
@@ -59,6 +89,11 @@ namespace AccountBalanceDDD.Domain
                 return true;
         }
 
+        public bool CheckIfCanTransfert(decimal amount)
+        {
+            return ((Balance + OverDraftLimit) - amount > 0 || amount < Daily_wire_tranfert_limit);
+        }
+
        
       public override void Apply(Event @event)
        {
@@ -81,10 +116,10 @@ namespace AccountBalanceDDD.Domain
                     Balance = Balance - w.Amount;
                     break;
 
-                case Blocked b:
+                case AccountBlocked b:
                     AccountStatus = false;
                 break;
-                case Unblocked u:
+                case AccountUnblocked u:
                     AccountStatus = true;
                 break;
                 case TransfertCreated t:

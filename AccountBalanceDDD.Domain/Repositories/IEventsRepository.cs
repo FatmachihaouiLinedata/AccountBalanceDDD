@@ -5,7 +5,7 @@ namespace AccountBalanceDDD.Domain.Repositories
 {
     public interface IEventsRepository<T> where T : AggregateRoot, new()
     {
-         T Find(Guid id);
+         T TryFind(Guid id);
          void Save(T aggregateRoot, Event @event);
 
     }
